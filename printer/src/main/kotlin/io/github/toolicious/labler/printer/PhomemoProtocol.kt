@@ -24,13 +24,17 @@ object PhomemoProtocol : PrinterProtocol {
      */
     const val FEED_DPI = 200
 
-    /** Millimeters of tape the head covers, which is what its dots are spread over. */
-    const val TAPE_HEIGHT_MM = 12f
+    /**
+     * Dots per millimeter across the tape, which is the pitch of the head itself and comes to
+     * the 203.2 dpi the part is sold with. Declared rather than worked out from [HEAD_DOTS] and
+     * a tape width: a wider head in this family has more of these dots, not dots further apart,
+     * so tying the two together would make a second model set both and get one of them wrong.
+     */
+    const val HEAD_DOTS_PER_MM = 8f
 
     override val geometry = HeadGeometry(
         headDots = HEAD_DOTS,
-        // 96 dots over the 12 mm of tape they cover, which is the 203 dpi the head is sold with.
-        headDotsPerMm = HEAD_DOTS / TAPE_HEIGHT_MM,
+        headDotsPerMm = HEAD_DOTS_PER_MM,
         feedDotsPerMm = FEED_DPI / HeadGeometry.MM_PER_INCH,
         bytesPerColumn = HEAD_DOTS / 8,
         minLengthMm = 10,

@@ -233,14 +233,14 @@ class EditorViewModel(app: Application, private val templateId: String) : Androi
 
     /**
      * The element defaults in Label.kt are written for a print head of
-     * [LabelSpec.DEFAULT_ELEMENT_HEAD_DOTS] dots. On a shorter one every new element would hang
-     * over both edges of the tape, so everything measured across it shrinks with the head.
-     * Positions are left alone, [placed] puts the element on the tape afterwards, and so is the
-     * stroke of a frame, which below a whole dot would print as nothing at all.
+     * [LabelSpec.DEFAULT_ELEMENT_HEAD_DOTS] dots. On a shorter head every new element would hang
+     * over both edges of the tape, on a taller one it would sit lost in the middle of it, so
+     * everything measured across the head follows the head. Positions are left alone, [placed]
+     * puts the element on the tape afterwards.
      */
     private fun fittedToHead(spec: LabelSpec, element: LabelElement): LabelElement {
         val factor = spec.printHeightPx.toFloat() / LabelSpec.DEFAULT_ELEMENT_HEAD_DOTS
-        if (factor >= 1f) return element
+        if (factor == 1f) return element
         return when (element) {
             is TextElement -> element.copy(fontSizePx = element.fontSizePx * factor)
             is IconElement -> element.copy(sizePx = element.sizePx * factor)
@@ -248,6 +248,8 @@ class EditorViewModel(app: Application, private val templateId: String) : Androi
                 widthPx = element.widthPx * factor,
                 heightPx = element.heightPx * factor,
                 cornerRadiusPx = element.cornerRadiusPx * factor,
+                // Only ever thickened. A stroke taken below a whole dot prints as nothing at all.
+                strokePx = if (factor > 1f) element.strokePx * factor else element.strokePx,
             )
             // Both sides, so a code that has to stay square stays square.
             is BarcodeElement -> element.copy(

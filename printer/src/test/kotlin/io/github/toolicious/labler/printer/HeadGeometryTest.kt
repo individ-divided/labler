@@ -13,6 +13,15 @@ class HeadGeometryTest {
     private val phomemo = PhomemoProtocol.geometry
 
     @Test
+    fun `the head pitch does not follow the head width`() {
+        // A wider head in the same family has more dots, not dots further apart, so a copy with
+        // twice the dots keeps the pitch and covers twice the tape.
+        val wider = phomemo.copy(headDots = phomemo.headDots * 2)
+        assertEquals(phomemo.headDotsPerMm, wider.headDotsPerMm)
+        assertEquals(phomemo.mmToDots(40), wider.mmToDots(40))
+    }
+
+    @Test
     fun `the two axes are different grids`() {
         // The head is the 203 dpi it is sold with, the feed the 200 two printers measured.
         assertEquals(8f, phomemo.headDotsPerMm, 0.001f)
