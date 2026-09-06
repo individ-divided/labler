@@ -24,6 +24,13 @@ interface PrinterProtocol {
     val awaitsPrintResult: Boolean get() = false
 
     /**
+     * Whether [buildJob] does anything with a density, so a settings screen knows whether to
+     * offer the control at all. Asking the protocol rather than comparing the family keeps the
+     * question answerable for a family that does not exist yet.
+     */
+    val supportsDensity: Boolean get() = false
+
+    /**
      * How long to give the printer to report on a raster of [columns] columns before giving up
      * on it. Only consulted where [awaitsPrintResult] is on. A flat number cannot serve both
      * ends of the range: what is a long wait for a short label is too short for a long one.

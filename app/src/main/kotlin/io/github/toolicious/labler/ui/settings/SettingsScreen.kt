@@ -478,13 +478,13 @@ fun SettingsScreen(
                 }
             }
 
-            // A Phomemo command, and one the 0x1F family only documents rather than confirms, so
-            // it stays a probe for development instead of something a release offers. The protocol
+            // The 0x1F darkness command is documented but not confirmed on the device, so it
+            // stays a probe for development instead of something a release offers. The protocol
             // side is untouched, and a level saved in a debug build keeps working.
             val printerFamily = (state as? PrinterState.Ready)?.family
                 ?: saved?.family
                 ?: PrinterFamily.DEFAULT
-            if (BuildConfig.DEBUG && printerFamily == PrinterFamily.PHOMEMO) {
+            if (BuildConfig.DEBUG && PrinterProtocols.of(printerFamily).supportsDensity) {
                 Spacer(Modifier.height(16.dp))
                 Text(stringResource(R.string.settings_experimental), style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(4.dp))

@@ -72,6 +72,8 @@ object PhomemoProtocol : PrinterProtocol {
 
     override val supportedMedia = setOf(MediaType.DIE_CUT, MediaType.CONTINUOUS)
 
+    override val supportsDensity = true
+
     /**
      * [FEED_DPI] is the average of what two printers measured, so an individual one can still
      * be half a percent off, and on a printed scale that shows. Everything else about this
