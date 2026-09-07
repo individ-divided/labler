@@ -309,6 +309,7 @@
     <string name="err_connect_failed">Connection failed</string>
     <string name="err_not_connected">No printer connected</string>
     <string name="err_print_failed">Printing failed</string>
+    <string name="err_print_refused">The printer turned the job down. Check the tape and the cassette.</string>
     <string name="err_file_not_writable">File not writable</string>
     <string name="err_file_not_readable">File not readable</string>
     <string name="err_file_invalid">Invalid file</string>

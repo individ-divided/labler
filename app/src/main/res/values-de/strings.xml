@@ -357,6 +357,7 @@
     <string name="err_connect_failed">Verbindung fehlgeschlagen</string>
     <string name="err_not_connected">Kein Drucker verbunden</string>
     <string name="err_print_failed">Druck fehlgeschlagen</string>
+    <string name="err_print_refused">Der Drucker hat den Auftrag abgelehnt. Prüfe Band und Kassette.</string>
     <string name="err_file_not_writable">Datei nicht beschreibbar</string>
     <string name="err_file_not_readable">Datei nicht lesbar</string>
     <string name="err_file_invalid">Ungültige Datei</string>

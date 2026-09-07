@@ -1,0 +1,2 @@
+- A print the printer turns down leaves the connection alone, so the next attempt does not wait for a reconnect first (#19)
+- A turned-down print names the tape and the cassette as the place to look (#19)

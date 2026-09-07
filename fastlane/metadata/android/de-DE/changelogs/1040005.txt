@@ -1,0 +1,2 @@
+- Lehnt der Drucker einen Auftrag ab, bleibt die Verbindung bestehen und der nächste Versuch wartet nicht erst auf einen Neuaufbau (#19)
+- Ein abgelehnter Auftrag nennt Band und Kassette als Stelle zum Nachsehen (#19)

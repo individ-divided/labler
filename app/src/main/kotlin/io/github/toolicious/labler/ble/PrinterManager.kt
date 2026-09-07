@@ -238,7 +238,9 @@ class PrinterManager(
                             payloads.size
                         val result = listener.awaitPrintResult(timeout, send)
                         bleLog("print result: " + (result?.name ?: "none within $timeout ms"))
-                        if (result != null && !result.printed) error(printResultMessage(result))
+                        if (result != null && !result.printed) {
+                            throw PrintRefused(printResultMessage(result))
+                        }
                     } else {
                         send()
                     }
@@ -246,6 +248,12 @@ class PrinterManager(
                 _state.value = ready.copy(batteryPercent = lastBattery ?: ready.batteryPercent)
             } catch (c: CancellationException) {
                 throw c
+            } catch (refused: PrintRefused) {
+                // The printer said no over a link that works, so the link stays. Sending it
+                // through the same path as a broken connection cost a full reconnect after every
+                // refused job, and the next attempt then had to wait for that first.
+                showTransientError(refused.reason, back = ready)
+                throw refused
             } catch (t: Throwable) {
                 disconnectInternal()
                 showTransientError(t.message ?: context.getString(R.string.err_print_failed))
@@ -260,22 +268,39 @@ class PrinterManager(
         job.await()
     }
 
-    /** What the printer reported back, as something to put in front of the user. */
+    /**
+     * The printer turning a job down. Its own doing and not a fault of the connection, which is
+     * why this leaves the link alone where a transport error tears it down.
+     */
+    private class PrintRefused(val reason: String) : Exception(reason)
+
+    /**
+     * What the printer reported back, as something to put in front of the user. Only reached for
+     * a result that did not print, so anything the codes do not name falls to the refusal text
+     * rather than to the one a broken connection uses.
+     */
     private fun printResultMessage(result: PrintResult): String = context.getString(
         when (result) {
             PrintResult.NO_CASSETTE -> R.string.err_no_cassette
             PrintResult.LOW_BATTERY -> R.string.err_battery_too_low
             PrintResult.CANCELLED -> R.string.err_print_canceled
-            else -> R.string.err_print_failed
+            else -> R.string.err_print_refused
         }
     )
 
-    private fun showTransientError(message: String) {
+    /**
+     * Shows [message] for a moment and then goes back to [back], which is where the printer
+     * really is once the message has had its time.
+     */
+    private fun showTransientError(
+        message: String,
+        back: PrinterState = PrinterState.Disconnected,
+    ) {
         val error = PrinterState.Error(message)
         _state.value = error
         scope.launch {
             delay(4_000)
-            _state.compareAndSet(error, PrinterState.Disconnected)
+            _state.compareAndSet(error, back)
         }
     }
 
